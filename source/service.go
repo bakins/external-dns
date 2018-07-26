@@ -46,6 +46,7 @@ type serviceSource struct {
 	client           kubernetes.Interface
 	namespace        string
 	annotationFilter string
+	labelSelector    string
 	// process Services with legacy annotations
 	compatibility         string
 	fqdnTemplate          *template.Template
@@ -54,7 +55,7 @@ type serviceSource struct {
 }
 
 // NewServiceSource creates a new serviceSource with the given config.
-func NewServiceSource(kubeClient kubernetes.Interface, namespace, annotationFilter string, fqdnTemplate string, combineFqdnAnnotation bool, compatibility string, publishInternal bool) (Source, error) {
+func NewServiceSource(kubeClient kubernetes.Interface, namespace, annotationFilter string, labelSelector string, fqdnTemplate string, combineFqdnAnnotation bool, compatibility string, publishInternal bool) (Source, error) {
 	var (
 		tmpl *template.Template
 		err  error
@@ -72,6 +73,7 @@ func NewServiceSource(kubeClient kubernetes.Interface, namespace, annotationFilt
 		client:                kubeClient,
 		namespace:             namespace,
 		annotationFilter:      annotationFilter,
+		labelSelector:         labelSelector,
 		compatibility:         compatibility,
 		fqdnTemplate:          tmpl,
 		combineFQDNAnnotation: combineFqdnAnnotation,
@@ -81,7 +83,7 @@ func NewServiceSource(kubeClient kubernetes.Interface, namespace, annotationFilt
 
 // Endpoints returns endpoint objects for each service that should be processed.
 func (sc *serviceSource) Endpoints() ([]*endpoint.Endpoint, error) {
-	services, err := sc.client.CoreV1().Services(sc.namespace).List(metav1.ListOptions{})
+	services, err := sc.client.CoreV1().Services(sc.namespace).List(metav1.ListOptions{LabelSelector: sc.labelSelector})
 	if err != nil {
 		return nil, err
 	}

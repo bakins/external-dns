@@ -48,6 +48,7 @@ func (suite *IngressSuite) SetupTest() {
 		fakeClient,
 		"",
 		"",
+		"",
 		"{{.Name}}",
 		false,
 	)
@@ -121,6 +122,7 @@ func TestNewIngressSource(t *testing.T) {
 				fake.NewSimpleClientset(),
 				"",
 				ti.annotationFilter,
+				"",
 				ti.fqdnTemplate,
 				ti.combineFQDNAndAnnotation,
 			)
@@ -221,6 +223,7 @@ func testIngressEndpoints(t *testing.T) {
 		title                    string
 		targetNamespace          string
 		annotationFilter         string
+		labelSelector            string
 		ingressItems             []fakeIngress
 		expected                 []*endpoint.Endpoint
 		expectError              bool
@@ -870,6 +873,41 @@ func testIngressEndpoints(t *testing.T) {
 			},
 			fqdnTemplate: "{{.Name}}.ext-dns.test.com",
 		},
+		{
+			title:         "valid matching label selector",
+			labelSelector: "expose=dmz",
+			ingressItems: []fakeIngress{
+				{
+					name:      "fake1",
+					namespace: namespace,
+					labels: map[string]string{
+						"expose": "dmz",
+					},
+					dnsnames: []string{"example.org"},
+					ips:      []string{"8.8.8.8"},
+				},
+			},
+			expected: []*endpoint.Endpoint{
+				{
+					DNSName: "example.org",
+					Targets: endpoint.Targets{"8.8.8.8"},
+				},
+			},
+		},
+		{
+			title:         "valid non-matching label selector",
+			labelSelector: "expose=dmz",
+			ingressItems: []fakeIngress{
+				{
+					name:      "fake1",
+					namespace: namespace,
+					labels:    map[string]string{},
+					dnsnames:  []string{"example.org"},
+					ips:       []string{"8.8.8.8"},
+				},
+			},
+			expected: []*endpoint.Endpoint{},
+		},
 	} {
 		t.Run(ti.title, func(t *testing.T) {
 			ingresses := make([]*v1beta1.Ingress, 0)
@@ -882,6 +920,7 @@ func testIngressEndpoints(t *testing.T) {
 				fakeClient,
 				ti.targetNamespace,
 				ti.annotationFilter,
+				ti.labelSelector,
 				ti.fqdnTemplate,
 				ti.combineFQDNAndAnnotation,
 			)
@@ -911,6 +950,7 @@ type fakeIngress struct {
 	namespace   string
 	name        string
 	annotations map[string]string
+	labels      map[string]string
 }
 
 func (ing fakeIngress) Ingress() *v1beta1.Ingress {
@@ -919,6 +959,7 @@ func (ing fakeIngress) Ingress() *v1beta1.Ingress {
 			Namespace:   ing.namespace,
 			Name:        ing.name,
 			Annotations: ing.annotations,
+			Labels:      ing.labels,
 		},
 		Spec: v1beta1.IngressSpec{
 			Rules: []v1beta1.IngressRule{},

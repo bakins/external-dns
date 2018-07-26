@@ -41,12 +41,13 @@ type ingressSource struct {
 	client                kubernetes.Interface
 	namespace             string
 	annotationFilter      string
+	labelSelector         string
 	fqdnTemplate          *template.Template
 	combineFQDNAnnotation bool
 }
 
 // NewIngressSource creates a new ingressSource with the given config.
-func NewIngressSource(kubeClient kubernetes.Interface, namespace, annotationFilter string, fqdnTemplate string, combineFqdnAnnotation bool) (Source, error) {
+func NewIngressSource(kubeClient kubernetes.Interface, namespace, annotationFilter string, labelSelector string, fqdnTemplate string, combineFqdnAnnotation bool) (Source, error) {
 	var (
 		tmpl *template.Template
 		err  error
@@ -64,6 +65,7 @@ func NewIngressSource(kubeClient kubernetes.Interface, namespace, annotationFilt
 		client:                kubeClient,
 		namespace:             namespace,
 		annotationFilter:      annotationFilter,
+		labelSelector:         labelSelector,
 		fqdnTemplate:          tmpl,
 		combineFQDNAnnotation: combineFqdnAnnotation,
 	}, nil
@@ -72,7 +74,7 @@ func NewIngressSource(kubeClient kubernetes.Interface, namespace, annotationFilt
 // Endpoints returns endpoint objects for each host-target combination that should be processed.
 // Retrieves all ingress resources on all namespaces
 func (sc *ingressSource) Endpoints() ([]*endpoint.Endpoint, error) {
-	ingresses, err := sc.client.Extensions().Ingresses(sc.namespace).List(metav1.ListOptions{})
+	ingresses, err := sc.client.Extensions().Ingresses(sc.namespace).List(metav1.ListOptions{LabelSelector: sc.labelSelector})
 	if err != nil {
 		return nil, err
 	}

@@ -69,6 +69,7 @@ func main() {
 	sourceCfg := &source.Config{
 		Namespace:                cfg.Namespace,
 		AnnotationFilter:         cfg.AnnotationFilter,
+		LabelSelector:            cfg.LabelSelector,
 		FQDNTemplate:             cfg.FQDNTemplate,
 		CombineFQDNAndAnnotation: cfg.CombineFQDNAndAnnotation,
 		Compatibility:            cfg.Compatibility,

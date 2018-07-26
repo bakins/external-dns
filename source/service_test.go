@@ -45,6 +45,7 @@ func (suite *ServiceSuite) SetupTest() {
 		fakeClient,
 		"",
 		"",
+		"",
 		"{{.Name}}",
 		false,
 		"",
@@ -128,6 +129,7 @@ func testServiceSourceNewServiceSource(t *testing.T) {
 				fake.NewSimpleClientset(),
 				"",
 				ti.annotationFilter,
+				"",
 				ti.fqdnTemplate,
 				false,
 				"",
@@ -149,6 +151,7 @@ func testServiceSourceEndpoints(t *testing.T) {
 		title                    string
 		targetNamespace          string
 		annotationFilter         string
+		labelSelector            string
 		svcNamespace             string
 		svcName                  string
 		svcType                  v1.ServiceType
@@ -166,6 +169,7 @@ func testServiceSourceEndpoints(t *testing.T) {
 			"no annotated services return no endpoints",
 			"",
 			"",
+			"",
 			"testing",
 			"foo",
 			v1.ServiceTypeLoadBalancer,
@@ -181,6 +185,7 @@ func testServiceSourceEndpoints(t *testing.T) {
 		},
 		{
 			"annotated services return an endpoint with target IP",
+			"",
 			"",
 			"",
 			"testing",
@@ -204,6 +209,7 @@ func testServiceSourceEndpoints(t *testing.T) {
 			"annotated ClusterIp aren't processed without explicit authorization",
 			"",
 			"",
+			"",
 			"testing",
 			"foo",
 			v1.ServiceTypeClusterIP,
@@ -221,6 +227,7 @@ func testServiceSourceEndpoints(t *testing.T) {
 		},
 		{
 			"FQDN template with multiple hostnames return an endpoint with target IP",
+			"",
 			"",
 			"",
 			"testing",
@@ -241,6 +248,7 @@ func testServiceSourceEndpoints(t *testing.T) {
 		},
 		{
 			"FQDN template and annotation both with multiple hostnames return an endpoint with target IP",
+			"",
 			"",
 			"",
 			"testing",
@@ -267,6 +275,7 @@ func testServiceSourceEndpoints(t *testing.T) {
 			"annotated services with multiple hostnames return an endpoint with target IP",
 			"",
 			"",
+			"",
 			"testing",
 			"foo",
 			v1.ServiceTypeLoadBalancer,
@@ -287,6 +296,7 @@ func testServiceSourceEndpoints(t *testing.T) {
 		},
 		{
 			"annotated services with multiple hostnames and without trailing period return an endpoint with target IP",
+			"",
 			"",
 			"",
 			"testing",
@@ -311,6 +321,7 @@ func testServiceSourceEndpoints(t *testing.T) {
 			"annotated services return an endpoint with target hostname",
 			"",
 			"",
+			"",
 			"testing",
 			"foo",
 			v1.ServiceTypeLoadBalancer,
@@ -330,6 +341,7 @@ func testServiceSourceEndpoints(t *testing.T) {
 		},
 		{
 			"annotated services can omit trailing dot",
+			"",
 			"",
 			"",
 			"testing",
@@ -354,6 +366,7 @@ func testServiceSourceEndpoints(t *testing.T) {
 			"our controller type is dns-controller",
 			"",
 			"",
+			"",
 			"testing",
 			"foo",
 			v1.ServiceTypeLoadBalancer,
@@ -376,6 +389,7 @@ func testServiceSourceEndpoints(t *testing.T) {
 			"different controller types are ignored even (with template specified)",
 			"",
 			"",
+			"",
 			"testing",
 			"foo",
 			v1.ServiceTypeLoadBalancer,
@@ -395,6 +409,7 @@ func testServiceSourceEndpoints(t *testing.T) {
 		{
 			"services are found in target namespace",
 			"testing",
+			"",
 			"",
 			"testing",
 			"foo",
@@ -417,6 +432,7 @@ func testServiceSourceEndpoints(t *testing.T) {
 			"services that are not in target namespace are ignored",
 			"testing",
 			"",
+			"",
 			"other-testing",
 			"foo",
 			v1.ServiceTypeLoadBalancer,
@@ -434,6 +450,7 @@ func testServiceSourceEndpoints(t *testing.T) {
 		},
 		{
 			"services are found in all namespaces",
+			"",
 			"",
 			"",
 			"other-testing",
@@ -457,6 +474,7 @@ func testServiceSourceEndpoints(t *testing.T) {
 			"valid matching annotation filter expression",
 			"",
 			"service.beta.kubernetes.io/external-traffic in (Global, OnlyLocal)",
+			"",
 			"testing",
 			"foo",
 			v1.ServiceTypeLoadBalancer,
@@ -479,6 +497,7 @@ func testServiceSourceEndpoints(t *testing.T) {
 			"valid non-matching annotation filter expression",
 			"",
 			"service.beta.kubernetes.io/external-traffic in (Global, OnlyLocal)",
+			"",
 			"testing",
 			"foo",
 			v1.ServiceTypeLoadBalancer,
@@ -499,6 +518,7 @@ func testServiceSourceEndpoints(t *testing.T) {
 			"invalid annotation filter expression",
 			"",
 			"service.beta.kubernetes.io/external-traffic in (Global OnlyLocal)",
+			"",
 			"testing",
 			"foo",
 			v1.ServiceTypeLoadBalancer,
@@ -519,6 +539,7 @@ func testServiceSourceEndpoints(t *testing.T) {
 			"valid matching annotation filter label",
 			"",
 			"service.beta.kubernetes.io/external-traffic=Global",
+			"",
 			"testing",
 			"foo",
 			v1.ServiceTypeLoadBalancer,
@@ -541,6 +562,7 @@ func testServiceSourceEndpoints(t *testing.T) {
 			"valid non-matching annotation filter label",
 			"",
 			"service.beta.kubernetes.io/external-traffic=Global",
+			"",
 			"testing",
 			"foo",
 			v1.ServiceTypeLoadBalancer,
@@ -561,6 +583,7 @@ func testServiceSourceEndpoints(t *testing.T) {
 			"no external entrypoints return no endpoints",
 			"",
 			"",
+			"",
 			"testing",
 			"foo",
 			v1.ServiceTypeLoadBalancer,
@@ -578,6 +601,7 @@ func testServiceSourceEndpoints(t *testing.T) {
 		},
 		{
 			"multiple external entrypoints return a single endpoint with multiple targets",
+			"",
 			"",
 			"",
 			"testing",
@@ -601,6 +625,7 @@ func testServiceSourceEndpoints(t *testing.T) {
 			"services annotated with legacy mate annotations are ignored in default mode",
 			"",
 			"",
+			"",
 			"testing",
 			"foo",
 			v1.ServiceTypeLoadBalancer,
@@ -618,6 +643,7 @@ func testServiceSourceEndpoints(t *testing.T) {
 		},
 		{
 			"services annotated with legacy mate annotations return an endpoint in compatibility mode",
+			"",
 			"",
 			"",
 			"testing",
@@ -639,6 +665,7 @@ func testServiceSourceEndpoints(t *testing.T) {
 		},
 		{
 			"services annotated with legacy molecule annotations return an endpoint in compatibility mode",
+			"",
 			"",
 			"",
 			"testing",
@@ -665,6 +692,7 @@ func testServiceSourceEndpoints(t *testing.T) {
 			"not annotated services with set fqdnTemplate return an endpoint with target IP",
 			"",
 			"",
+			"",
 			"testing",
 			"foo",
 			v1.ServiceTypeLoadBalancer,
@@ -683,6 +711,7 @@ func testServiceSourceEndpoints(t *testing.T) {
 		},
 		{
 			"annotated services with set fqdnTemplate annotation takes precedence",
+			"",
 			"",
 			"",
 			"testing",
@@ -707,6 +736,7 @@ func testServiceSourceEndpoints(t *testing.T) {
 			"compatibility annotated services with tmpl. compatibility takes precedence",
 			"",
 			"",
+			"",
 			"testing",
 			"foo",
 			v1.ServiceTypeLoadBalancer,
@@ -728,6 +758,7 @@ func testServiceSourceEndpoints(t *testing.T) {
 			"not annotated services with unknown tmpl field should not return anything",
 			"",
 			"",
+			"",
 			"testing",
 			"foo",
 			v1.ServiceTypeLoadBalancer,
@@ -743,6 +774,7 @@ func testServiceSourceEndpoints(t *testing.T) {
 		},
 		{
 			"ttl not annotated should have RecordTTL.IsConfigured set to false",
+			"",
 			"",
 			"",
 			"testing",
@@ -764,6 +796,7 @@ func testServiceSourceEndpoints(t *testing.T) {
 		},
 		{
 			"ttl annotated but invalid should have RecordTTL.IsConfigured set to false",
+			"",
 			"",
 			"",
 			"testing",
@@ -788,6 +821,7 @@ func testServiceSourceEndpoints(t *testing.T) {
 			"ttl annotated and is valid should set Record.TTL",
 			"",
 			"",
+			"",
 			"testing",
 			"foo",
 			v1.ServiceTypeLoadBalancer,
@@ -810,6 +844,7 @@ func testServiceSourceEndpoints(t *testing.T) {
 			"Negative ttl is not valid",
 			"",
 			"",
+			"",
 			"testing",
 			"foo",
 			v1.ServiceTypeLoadBalancer,
@@ -826,6 +861,50 @@ func testServiceSourceEndpoints(t *testing.T) {
 			[]*endpoint.Endpoint{
 				{DNSName: "foo.example.org", Targets: endpoint.Targets{"1.2.3.4"}, RecordTTL: endpoint.TTL(0)},
 			},
+			false,
+		},
+		{
+			"valid matching label selector",
+			"",
+			"",
+			"expose=dmz",
+			"testing",
+			"foo",
+			v1.ServiceTypeLoadBalancer,
+			"",
+			"",
+			false,
+			map[string]string{
+				"expose": "dmz",
+			},
+			map[string]string{
+				hostnameAnnotationKey: "foo.example.org.",
+			},
+			"",
+			[]string{"1.2.3.4"},
+			[]*endpoint.Endpoint{
+				{DNSName: "foo.example.org", Targets: endpoint.Targets{"1.2.3.4"}},
+			},
+			false,
+		},
+		{
+			"valid non-matching label selector",
+			"",
+			"",
+			"expose=dmz",
+			"testing",
+			"foo",
+			v1.ServiceTypeLoadBalancer,
+			"",
+			"",
+			false,
+			map[string]string{},
+			map[string]string{
+				hostnameAnnotationKey: "foo.example.org.",
+			},
+			"",
+			[]string{"1.2.3.4"},
+			[]*endpoint.Endpoint{},
 			false,
 		},
 	} {
@@ -869,6 +948,7 @@ func testServiceSourceEndpoints(t *testing.T) {
 				kubernetes,
 				tc.targetNamespace,
 				tc.annotationFilter,
+				tc.labelSelector,
 				tc.fqdnTemplate,
 				tc.combineFQDNAndAnnotation,
 				tc.compatibility,
@@ -1002,6 +1082,7 @@ func TestClusterIpServices(t *testing.T) {
 				kubernetes,
 				tc.targetNamespace,
 				tc.annotationFilter,
+				"",
 				tc.fqdnTemplate,
 				false,
 				tc.compatibility,
@@ -1197,6 +1278,7 @@ func TestNodePortServices(t *testing.T) {
 				kubernetes,
 				tc.targetNamespace,
 				tc.annotationFilter,
+				"",
 				tc.fqdnTemplate,
 				false,
 				tc.compatibility,
@@ -1396,6 +1478,7 @@ func TestHeadlessServices(t *testing.T) {
 				kubernetes,
 				tc.targetNamespace,
 				"",
+				"",
 				tc.fqdnTemplate,
 				false,
 				tc.compatibility,
@@ -1440,7 +1523,7 @@ func BenchmarkServiceEndpoints(b *testing.B) {
 	_, err := kubernetes.CoreV1().Services(service.Namespace).Create(service)
 	require.NoError(b, err)
 
-	client, err := NewServiceSource(kubernetes, v1.NamespaceAll, "", "", false, "", false)
+	client, err := NewServiceSource(kubernetes, v1.NamespaceAll, "", "", "", false, "", false)
 	require.NoError(b, err)
 
 	for i := 0; i < b.N; i++ {

@@ -41,6 +41,7 @@ type Config struct {
 	Sources                  []string
 	Namespace                string
 	AnnotationFilter         string
+	LabelSelector            string
 	FQDNTemplate             string
 	CombineFQDNAndAnnotation bool
 	Compatibility            string
@@ -97,6 +98,7 @@ var defaultConfig = &Config{
 	Sources:                  nil,
 	Namespace:                "",
 	AnnotationFilter:         "",
+	LabelSelector:            "",
 	FQDNTemplate:             "",
 	CombineFQDNAndAnnotation: false,
 	Compatibility:            "",
@@ -186,6 +188,7 @@ func (cfg *Config) ParseFlags(args []string) error {
 	app.Flag("source", "The resource types that are queried for endpoints; specify multiple times for multiple sources (required, options: service, ingress, fake, connector)").Required().PlaceHolder("source").EnumsVar(&cfg.Sources, "service", "ingress", "fake", "connector")
 	app.Flag("namespace", "Limit sources of endpoints to a specific namespace (default: all namespaces)").Default(defaultConfig.Namespace).StringVar(&cfg.Namespace)
 	app.Flag("annotation-filter", "Filter sources managed by external-dns via annotation using label selector semantics (default: all sources)").Default(defaultConfig.AnnotationFilter).StringVar(&cfg.AnnotationFilter)
+	app.Flag("selector", "Selector (label query) to filter on, supports '=', '==', and '!='.(e.g. -l key1=value1,key2=value2)").Default(defaultConfig.LabelSelector).StringVar(&cfg.LabelSelector)
 	app.Flag("fqdn-template", "A templated string that's used to generate DNS names from sources that don't define a hostname themselves, or to add a hostname suffix when paired with the fake source (optional). Accepts comma separated list for multiple global FQDN.").Default(defaultConfig.FQDNTemplate).StringVar(&cfg.FQDNTemplate)
 	app.Flag("combine-fqdn-annotation", "Combine FQDN template and Annotations instead of overwriting").BoolVar(&cfg.CombineFQDNAndAnnotation)
 	app.Flag("compatibility", "Process annotation semantics from legacy implementations (optional, options: mate, molecule)").Default(defaultConfig.Compatibility).EnumVar(&cfg.Compatibility, "", "mate", "molecule")

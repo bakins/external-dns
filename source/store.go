@@ -37,6 +37,7 @@ var ErrSourceNotFound = errors.New("source not found")
 type Config struct {
 	Namespace                string
 	AnnotationFilter         string
+	LabelSelector            string
 	FQDNTemplate             string
 	CombineFQDNAndAnnotation bool
 	Compatibility            string
@@ -89,13 +90,13 @@ func BuildWithConfig(source string, p ClientGenerator, cfg *Config) (Source, err
 		if err != nil {
 			return nil, err
 		}
-		return NewServiceSource(client, cfg.Namespace, cfg.AnnotationFilter, cfg.FQDNTemplate, cfg.CombineFQDNAndAnnotation, cfg.Compatibility, cfg.PublishInternal)
+		return NewServiceSource(client, cfg.Namespace, cfg.AnnotationFilter, cfg.LabelSelector, cfg.FQDNTemplate, cfg.CombineFQDNAndAnnotation, cfg.Compatibility, cfg.PublishInternal)
 	case "ingress":
 		client, err := p.KubeClient()
 		if err != nil {
 			return nil, err
 		}
-		return NewIngressSource(client, cfg.Namespace, cfg.AnnotationFilter, cfg.FQDNTemplate, cfg.CombineFQDNAndAnnotation)
+		return NewIngressSource(client, cfg.Namespace, cfg.AnnotationFilter, cfg.LabelSelector, cfg.FQDNTemplate, cfg.CombineFQDNAndAnnotation)
 	case "fake":
 		return NewFakeSource(cfg.FQDNTemplate)
 	case "connector":
